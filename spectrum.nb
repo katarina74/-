@@ -5,241 +5,41 @@
 
 (* CreatedBy='Mathematica 12.0' *)
 
-(*CacheID: 234*)
-(* Internal cache information:
-NotebookFileLineBreakTest
-NotebookFileLineBreakTest
-NotebookDataPosition[       158,          7]
-NotebookDataLength[      9256,        237]
-NotebookOptionsPosition[      8397,        218]
-NotebookOutlinePosition[      8739,        233]
-CellTagsIndexPosition[      8696,        230]
-WindowFrame->Normal*)
+Clear[getWeights] (* вычисление веса вектора *)
+getWeights[vec_, n_, bit_] := Total[vec]
+getWeights[vec_, n_, 0] := n - Total[vec]
 
-(* Beginning of Notebook Content *)
-Notebook[{
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Clear", "[", "getWeights", "]"}], " ", 
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "\:0432\:044b\:0447\:0438\:0441\:043b\:0435\:043d\:0438\:0435", " ", 
-    "\:0432\:0435\:0441\:0430", " ", 
-    "\:0432\:0435\:043a\:0442\:043e\:0440\:0430"}], " ", 
-   "*)"}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getWeights", "[", 
-   RowBox[{"vec_", ",", "n_", ",", "bit_"}], "]"}], ":=", 
-  RowBox[{"Total", "[", "vec", "]"}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getWeights", "[", 
-   RowBox[{"vec_", ",", "n_", ",", "0"}], "]"}], ":=", 
-  RowBox[{"n", "-", 
-   RowBox[{"Total", "[", "vec", "]"}]}]}]}], "Input",
- CellChangeTimes->{{3.802973839353255*^9, 3.8029738453751507`*^9}, {
-  3.802973887211665*^9, 3.8029739693370085`*^9}, {3.8029740182152987`*^9, 
-  3.8029740314828196`*^9}, {3.8029826522301025`*^9, 3.80298267981942*^9}, {
-  3.8029827354144735`*^9, 3.802982736861049*^9}},
- CellLabel->"In[1]:=",ExpressionUUID->"e07e60bb-97c4-4ac1-bfe8-478a8d4cd98f"],
+Clear[getVectors] 
+getVectors[VS_, k_] := 
+ BitXor @@@ Transpose[VS*#] & /@ IntegerDigits[Range[0, 2^k - 1], 2, k]
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Clear", "[", "getVectors", "]"}], " "}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getVectors", "[", 
-   RowBox[{"VS_", ",", "k_"}], "]"}], ":=", 
-  RowBox[{
-   RowBox[{
-    RowBox[{"BitXor", "@@@", 
-     RowBox[{"Transpose", "[", 
-      RowBox[{"VS", "*", "#"}], "]"}]}], "&"}], "/@", 
-   RowBox[{"IntegerDigits", "[", 
-    RowBox[{
-     RowBox[{"Range", "[", 
-      RowBox[{"0", ",", 
-       RowBox[{
-        SuperscriptBox["2", "k"], "-", "1"}]}], "]"}], ",", "2", ",", "k"}], 
-    "]"}]}]}]}], "Input",
- CellChangeTimes->{{3.802982024112645*^9, 3.8029820581587043`*^9}, {
-  3.802982681745942*^9, 3.8029827009068646`*^9}},
- CellLabel->"In[4]:=",ExpressionUUID->"2a796766-7224-4a06-8942-a8835e3bab27"],
+Clear[getWeightsStep1]
+getWeightsStep1[allVectors_, n_, bit_] := 
+ Map[getWeights[#, n, bit] &, allVectors]
 
-Cell[BoxData[{
- RowBox[{"Clear", "[", "getWeightsStep1", "]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getWeightsStep1", "[", 
-   RowBox[{"allVectors_", ",", "n_", ",", "bit_"}], "]"}], ":=", 
-  RowBox[{"Map", "[", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"getWeights", "[", 
-      RowBox[{"#", ",", "n", ",", "bit"}], "]"}], "&"}], ",", "allVectors"}], 
-   "]"}]}]}], "Input",
- CellChangeTimes->{{3.802982192093704*^9, 3.8029822188586264`*^9}, {
-  3.8029827394543986`*^9, 3.8029827395970154`*^9}},
- CellLabel->"In[6]:=",ExpressionUUID->"3f6d1134-6331-4037-a5f5-8ef09ac6aefa"],
+Clear[getHistogramStep1]
+getHistogramStep1[allVectors_, weightsStep1_, weightsStep2_, n_] := 
+ Join[weightsStep2, 
+  Transpose[{Complement[Range[0, n], weightsStep1], 
+    ConstantArray[0, n + 1 - Length@weightsStep2]}]]
 
-Cell[BoxData[{
- RowBox[{"Clear", "[", "getHistogramStep1", "]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getHistogramStep1", "[", 
-   RowBox[{
-   "allVectors_", ",", "weightsStep1_", ",", "weightsStep2_", ",", "n_"}], 
-   "]"}], ":=", 
-  RowBox[{"Join", "[", 
-   RowBox[{"weightsStep2", ",", 
-    RowBox[{"Transpose", "[", 
-     RowBox[{"{", 
-      RowBox[{
-       RowBox[{"Complement", "[", 
-        RowBox[{
-         RowBox[{"Range", "[", 
-          RowBox[{"0", ",", "n"}], "]"}], ",", "weightsStep1"}], "]"}], ",", 
-       RowBox[{"ConstantArray", "[", 
-        RowBox[{"0", ",", 
-         RowBox[{"n", "+", "1", "-", 
-          RowBox[{"Length", "@", "weightsStep2"}]}]}], "]"}]}], "}"}], 
-     "]"}]}], "]"}]}]}], "Input",
- CellChangeTimes->{{3.802982092993902*^9, 3.802982177702038*^9}, {
-  3.8029822305550966`*^9, 3.802982320538375*^9}},
- CellLabel->"In[8]:=",ExpressionUUID->"193fae08-a6cf-4851-aed7-98ab0d08b92c"],
+Clear[getHistogram](* возвращает список списков вида {{вес, кол-во \
+векторов},...} *)
+getHistogram[VS_, n_, bit_ : 1 (* 0 или 1 *)] := With[
+  {
+   	allVectors = getVectors[VS, Length[VS]]
+   },
+  	SortBy[
+   getHistogramStep1[allVectors, #, Tally@#, n] &@
+    getWeightsStep1[allVectors, n, bit], First]
+  ]
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Clear", "[", "getHistogram", "]"}], 
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "\:0432\:043e\:0437\:0432\:0440\:0430\:0449\:0430\:0435\:0442", " ", 
-    "\:0441\:043f\:0438\:0441\:043e\:043a", " ", 
-    "\:0441\:043f\:0438\:0441\:043a\:043e\:0432", " ", 
-    "\:0432\:0438\:0434\:0430", " ", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{"\:0432\:0435\:0441", ",", " ", 
-        RowBox[{"\:043a\:043e\:043b", "-", 
-         RowBox[{
-         "\:0432\:043e", " ", 
-          "\:0432\:0435\:043a\:0442\:043e\:0440\:043e\:0432"}]}]}], "}"}], 
-      ",", "..."}], "}"}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"getHistogram", "[", 
-   RowBox[{"VS_", ",", "n_", ",", 
-    RowBox[{"bit_", " ", ":", "1"}]}], " ", 
-   RowBox[{"(*", " ", 
-    RowBox[{"0", " ", "\:0438\:043b\:0438", " ", "1"}], " ", "*)"}], "]"}], ":=", 
-  RowBox[{"With", "[", "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"{", "\[IndentingNewLine]", "\t", 
-     RowBox[{"allVectors", "=", 
-      RowBox[{"getVectors", "[", 
-       RowBox[{"VS", ",", 
-        RowBox[{"Length", "[", "VS", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
-     "}"}], ",", "\[IndentingNewLine]", "\t", 
-    RowBox[{"SortBy", "[", 
-     RowBox[{
-      RowBox[{
-       RowBox[{
-        RowBox[{"getHistogramStep1", "[", 
-         RowBox[{"allVectors", ",", "#", ",", 
-          RowBox[{"Tally", "@", "#"}], ",", "n"}], "]"}], "&"}], "@", 
-       RowBox[{"getWeightsStep1", "[", 
-        RowBox[{"allVectors", ",", "n", ",", "bit"}], "]"}]}], ",", "First"}],
-      "]"}]}], "\[IndentingNewLine]", "]"}]}]}], "Input",
- CellChangeTimes->{{3.8029823052931175`*^9, 3.8029825522474813`*^9}, {
-   3.8029827130155244`*^9, 3.8029827440859222`*^9}, {3.8029829381982145`*^9, 
-   3.8029829610863247`*^9}, 3.8029830100066814`*^9, 3.803019773823205*^9, {
-   3.8030200463045893`*^9, 3.8030200521180477`*^9}, {3.8030201063739233`*^9, 
-   3.8030201090777225`*^9}},ExpressionUUID->"0828e12e-f2c1-4cb8-914f-\
-1a1f9b9131b4"],
+VS = ToExpression@
+   DeleteCases[
+    Split[Characters@
+      Import[NotebookDirectory[], "data.txt"], # != "\n" &], "\n", 
+    2] ;(* импорт данных *)
 
-Cell[BoxData[
- RowBox[{
-  RowBox[{"VS", "=", 
-   RowBox[{"ToExpression", "@", 
-    RowBox[{"DeleteCases", "[", 
-     RowBox[{
-      RowBox[{"Split", "[", 
-       RowBox[{
-        RowBox[{"Characters", "@", 
-         RowBox[{"Import", "[", 
-          RowBox[{
-           RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<data.txt\>\""}],
-           "]"}]}], ",", 
-        RowBox[{
-         RowBox[{"#", "!=", "\"\<\\n\>\""}], "&"}]}], "]"}], ",", 
-      "\"\<\\n\>\"", ",", "2"}], "]"}]}]}], " ", ";", 
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "\:0438\:043c\:043f\:043e\:0440\:0442", " ", 
-    "\:0434\:0430\:043d\:043d\:044b\:0445"}], " ", "*)"}]}]], "Input",
- CellChangeTimes->{{3.8029814063185596`*^9, 3.8029814651918535`*^9}, {
-   3.8029814990260735`*^9, 3.802981501567814*^9}, {3.8029815335112534`*^9, 
-   3.802981608266362*^9}, {3.8029816913329906`*^9, 3.8029817752894006`*^9}, {
-   3.8029818091572905`*^9, 3.8029818150504875`*^9}, {3.802981908361643*^9, 
-   3.8029819216497746`*^9}, {3.802981989988123*^9, 3.8029819926319447`*^9}, {
-   3.8029827509123755`*^9, 3.8029827673124905`*^9}, 3.802982984759676*^9, {
-   3.8029831864316816`*^9, 3.8029831961628585`*^9}, 3.8030200048783665`*^9},
- CellLabel->"In[20]:=",ExpressionUUID->"9a77f0fd-6e0d-4f07-a9fa-7b772958c9c7"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Export", "[", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<result.txt\>\""}], 
-    ",", 
-    RowBox[{
-     RowBox[{
-      RowBox[{
-       RowBox[{"ToString", "@", 
-        RowBox[{"#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}],
-        "<>", "\"\<\\t\>\"", "<>", 
-       RowBox[{"ToString", "@", 
-        RowBox[{
-        "#", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}]}], 
-      "&"}], "/@", 
-     RowBox[{"getHistogram", "[", 
-      RowBox[{"VS", ",", 
-       RowBox[{"Length", "[", 
-        RowBox[{"VS", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-        "]"}], ",", "1"}], "]"}]}]}], "]"}], " ", 
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "\:044d\:043a\:0441\:043f\:043e\:0440\:0442", " ", 
-    "\:0440\:0435\:0437\:0443\:043b\:044c\:0442\:0430\:0442\:0430"}], " ", 
-   "*)"}]}]], "Input",
- CellChangeTimes->{{3.8029825287081203`*^9, 3.8029825326546197`*^9}, {
-  3.8029825903319063`*^9, 3.8029825944513783`*^9}, {3.8029828411479015`*^9, 
-  3.8029828838077507`*^9}, {3.803019772279332*^9, 3.8030198083868203`*^9}, {
-  3.8030198957908063`*^9, 3.8030199838515997`*^9}, {3.803020057628804*^9, 
-  3.803020099745675*^9}},ExpressionUUID->"18e4d8cd-beed-4aff-abb8-\
-251661454e64"]
-},
-WindowSize->{1520, 781},
-WindowMargins->{{-8, Automatic}, {Automatic, 0}},
-FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
-StyleDefinitions->"Default.nb"
-]
-(* End of Notebook Content *)
-
-(* Internal cache information *)
-(*CellTagsOutline
-CellTagsIndex->{}
-*)
-(*CellTagsIndex
-CellTagsIndex->{}
-*)
-(*NotebookFileOutline
-Notebook[{
-Cell[558, 20, 997, 22, 119, "Input",ExpressionUUID->"e07e60bb-97c4-4ac1-bfe8-478a8d4cd98f"],
-Cell[1558, 44, 742, 20, 87, "Input",ExpressionUUID->"2a796766-7224-4a06-8942-a8835e3bab27"],
-Cell[2303, 66, 580, 13, 82, "Input",ExpressionUUID->"3f6d1134-6331-4037-a5f5-8ef09ac6aefa"],
-Cell[2886, 81, 929, 23, 82, "Input",ExpressionUUID->"193fae08-a6cf-4851-aed7-98ab0d08b92c"],
-Cell[3818, 106, 2014, 47, 215, "Input",ExpressionUUID->"0828e12e-f2c1-4cb8-914f-1a1f9b9131b4"],
-Cell[5835, 155, 1267, 27, 45, "Input",ExpressionUUID->"9a77f0fd-6e0d-4f07-a9fa-7b772958c9c7"],
-Cell[7105, 184, 1288, 32, 45, "Input",ExpressionUUID->"18e4d8cd-beed-4aff-abb8-251661454e64"]
-}
-]
-*)
-
+Export[NotebookDirectory[] <> "result.txt", 
+ ToString@#[[1]] <> "\t" <> ToString@#[[2]] & /@ 
+  getHistogram[VS, Length[VS[[1]]], 1]] (* экспорт результата *)
