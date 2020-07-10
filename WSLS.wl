@@ -24,7 +24,6 @@ weightSpectrumLinearSubspace1;
 Begin["`Private`"]
 
 
-Clear[updateSubsets]
 updateSubsets[subsets_,vec_]:=Join[subsets,BitXor[#,vec]&/@subsets]
 
 
